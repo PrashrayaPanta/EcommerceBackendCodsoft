@@ -7,17 +7,14 @@ const CategorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique:true
-
+      unique: true,
     },
 
-    slug:{
+    slug: {
       type: String,
       required: true,
       unique: true,
-    }
-
-
+    },
   },
 
   {

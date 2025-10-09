@@ -39,6 +39,22 @@ const productCtrl = {
         .json({ message: "Some fields are missing in the request body" });
     }
 
+    console.log("I am after the empty validation");
+
+    const productFromProduct = await Product.findOne({ name });
+
+    if (productFromProduct) {
+      return res.status(400).json({
+        message: "Product with this name already exists",
+        sttaus: "false",
+        data: null,
+      });
+    }
+
+    console.log(sizes);
+
+    // console.log(colors);
+
     // console.log(discountPercentage);
 
     const category = await Category.findById(categoryId);
@@ -49,6 +65,14 @@ const productCtrl = {
 
     console.log(brand);
 
+    console.log(colors);
+
+    console.log(sizes);
+
+    // console.log(json.parse(colors));
+
+    // console.log(JSON.parse(colors));
+
     // Parse JSON strings for colors and sizes
     const parsedColors =
       typeof colors === "string" ? JSON.parse(colors) : colors;
@@ -58,9 +82,19 @@ const productCtrl = {
 
     console.log(typeof parsedColors);
 
-    const slug = name.split(" ").join("-");
+    const slug = name.toLowerCase().split(" ").join("-");
 
     console.log(slug);
+
+    const slugFromProduct = await Product.findOne({ slug });
+
+    if (slugFromProduct) {
+      return res.status(400).json({
+        message: "Slug should be unique",
+        status: "false",
+        data: null,
+      });
+    }
 
     // const categoryDocument = await Category.findOne({_id: categoryId});
 
@@ -96,21 +130,18 @@ const productCtrl = {
 
     // console.log(product);
 
-    res.status(201).json({ message: "Product created successfully", product });
+    res.status(201).json({
+      message: "Product created successfully",
+      status: "true",
+      data: product,
+    });
   }),
 
   deleteproduct: asyncHandler(async (req, res) => {
-    const { id } = req.params;
-
-    console.log("ID from req.params:", id);
-
-    // Validate the ID format
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid product ID" });
-    }
+    const { slug } = req.params;
 
     // Find product by ID
-    const productFound = await Product.findById(id);
+    const productFound = await Product.findOne({ slug });
 
     if (!productFound) {
       return res.status(404).json({ message: "Product not found" });
@@ -124,9 +155,7 @@ const productCtrl = {
     });
 
     // Delete product from database
-    await Product.findByIdAndDelete(id, {deleted:true});
-
-
+    await Product.findOneAndDelete({ slug });
 
     console.log("Successfully deleted");
 
@@ -173,23 +202,20 @@ const productCtrl = {
   }),
 
   getAllproduct: asyncHandler(async (req, res) => {
-    console.log("I am lower endpoint");
     const products = await Product.find();
 
-    res.status(201).json({ products });
+    res
+      .status(201)
+      .json({ status: "success", success: "true", data: products });
 
     //
   }),
 
   getCertainproduct: asyncHandler(async (req, res) => {
     console.log("Hello I am inside get product By Id");
+    const { slug } = req.params;
 
-    const { id } = req.params;
-
-    const product = await Product.findById(id).populate({
-      path: "reviews.DoneBy",
-      select: "username email",
-    });
+    const product = await Product.findOne({ slug });
 
     console.log(product);
 
@@ -207,25 +233,18 @@ const productCtrl = {
   }),
 
   getAllProductByCategoryId: asyncHandler(async (req, res) => {
-    console.log("I am inside the get all product by category Id");
+    const { slug } = req.params;
 
-    // const { id } = req.params;
-
-
-
-    const {slug} = req.params;
-
-    const products = await Product.find({ categorySlug:slug });
+    const products = await Product.find({ categorySlug: slug });
 
     console.log(products);
 
-    res.json({ products });
+    res.json({ products, status: "success" });
   }),
 
   getAllProductByBrandId: asyncHandler(async (req, res) => {
-
     console.log("I am inside the get all product by brand Id");
-    
+
     // const { id } = req.params;
 
     // console.log(id);
@@ -234,7 +253,7 @@ const productCtrl = {
 
     console.log(slug);
 
-    const products = await Product.find({  brandName:slug });
+    const products = await Product.find({ brandName: slug });
 
     console.log(products);
 
@@ -256,7 +275,6 @@ const productCtrl = {
     console.log("I am inside the edit certain product controoler");
 
     console.log(req.files);
-    
 
     const { id } = req.params;
 
@@ -273,9 +291,7 @@ const productCtrl = {
       })
     );
 
-  
-  // console.log(images);
-  
+    // console.log(images);
 
     const {
       name,
@@ -414,30 +430,10 @@ const productCtrl = {
     res.status(200).json({ products: filteredProducts });
   }),
 
-  // getAllProductsByCategoryName: asyncHandler(async (req, res) => {
-  //   const { categoryName } = req.params; // Get the categoryName from the request parameters
-
-  //   // Find the category by name
-  //   const category = await Category.findOne({ categoryName });
-
-  //   if (!category) {
-  //     return res.status(404).json({ message: "Category not found" });
-  //   }
-
-  //   // Use the category's _id to fetch products
-  //   const products = await Product.find({ category_id: category._id }).populate("category_id");
-
-  //   if (!products || products.length === 0) {
-  //     return res.status(404).json({ message: "No products found for this category" });
-  //   }
-
-  //   res.status(200).json({ products });
-  // }),
-
   createCertainProductReviews: asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const product = await Product.findById(id).select(
-      "-description -images -colors -sizes"
+    const { slug } = req.params;
+    const product = await Product.findOne({ slug }).select(
+      "-description -images -colors -sizes -categoryName -brandSlug -categorySlug -brandName -stock"
     );
     // console.log(product);
     if (!product) {
@@ -455,48 +451,16 @@ const productCtrl = {
   }),
 
   getCertainProductReviews: asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    console.log("Helo");
 
-    const productReviews = await Product.findById(id).populate(
+    const { slug } = req.params;
+
+    const productReviews = await Product.findOne({ slug }).populate(
       "reviews.DoneBy"
     );
 
-    res.json({ productReviews });
+    res.json({ productReviews, status: "success" });
   }),
-
-  updateProductPrice: asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { newPrice } = req.body;
-
-    const product = await Product.findById(id);
-
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    // Save the old price in the Product model
-    const oldPrice = product.finalPrice;
-    product.oldPrice = oldPrice;
-    product.finalPrice = newPrice;
-
-    await product.save();
-
-    // Alternatively, save the old price in the PriceHistory model
-    await PriceHistory.create({
-      product_id: id,
-      oldPrice,
-    });
-
-    res.json({ message: "Product price updated successfully", product });
-  }),
-
-  // getAllProductsReviews: asyncHandler(async(req, res) =>{
-
-  //     const products = await Product.find();
-
-  //     console.log(products);
-
-  // })
 };
 
 module.exports = productCtrl;

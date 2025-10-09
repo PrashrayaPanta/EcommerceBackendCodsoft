@@ -40,16 +40,22 @@ const brandCtrl = {
       slug,
     });
 
-    res.status(201).json({ message: "Brand created successfully", brand });
+    res.status(201).json({
+      message: "Brand created successfully",
+      success: "true",
+      data: brand,
+    });
   }),
 
   deleteCertainBrand: asyncHandler(async (req, res) => {
     console.log("Taile yo run gararako ho");
 
-    const { id } = req.params;
+    const { slug } = req.params;
 
-    // Find the brand by ID
-    const brand = await Brand.findById(id);
+    console.log(slug);
+
+    // Find the brand by Slug
+    const brand = await Brand.findOne({ slug });
 
     if (!brand) {
       return res.status(404).json({ message: "Brand not found" });
@@ -64,6 +70,7 @@ const brandCtrl = {
 
         console.log("Image deleted successfully from Cloudinary.");
       } catch (error) {
+        //If the publicidBrand Image is not present
         console.error("Error deleting image from Cloudinary:", error.message);
         return res.status(500).json({
           message: "Failed to delete image from Cloudinary",
@@ -73,10 +80,12 @@ const brandCtrl = {
     }
 
     // Delete the brand from the database
-    await Brand.findByIdAndDelete(id);
+    await Brand.findOneAndDelete({ slug });
 
     res.json({
       message: "Brand and associated image deleted successfully",
+      success: true,
+      data: null,
     });
   }),
 
@@ -87,19 +96,21 @@ const brandCtrl = {
 
     const brands = await Brand.find();
 
-    res.json({ brands });
+    res.status(201).json({ success: true, data: brands });
   }),
 
   EditCertainBrand: asyncHandler(async (req, res) => {
     console.log("I am inside the edit certain brand");
 
-    const { id } = req.params;
+    const { slug } = req.params;
+
+    console.log(slug);
 
     const { name, slogan } = req.body;
 
     console.log(name, slogan);
 
-    const BrandDocument = await Brand.findById(id);
+    const BrandDocument = await Brand.findOne({ slug });
 
     if (!BrandDocument) {
       throw new Error("Brand not found in");
@@ -116,8 +127,8 @@ const brandCtrl = {
       throw new Error("The image field value shouldnot be empty");
     }
 
-    const updatedBrand = await Brand.findByIdAndUpdate(
-      id,
+    const updatedBrand = await Brand.findOneAndUpdate(
+      { slug },
       {
         name,
         slogan,
@@ -132,6 +143,7 @@ const brandCtrl = {
     res.status(200).json({
       message: "Brand updated successfully",
       updatedBrand,
+      status: true,
     });
   }),
 
@@ -144,15 +156,14 @@ const brandCtrl = {
     // console.log(slug);
 
     console.log(slug);
-    
+
+    console.log(slug);
 
     // console.log(typeof id);
 
     // const brand = await Brand.findById(slug);
 
-    const brand = await Brand.find({slug});
-
-    console.log(brand);
+    const brand = await Brand.findOne({ slug });
 
     if (!brand) {
       return res.status(400).json({ message: "Brand not found" });
@@ -160,7 +171,8 @@ const brandCtrl = {
 
     res.json({
       message: "Brand fetched successfully",
-      brand,
+      status: true,
+      data: brand,
     });
   }),
 };

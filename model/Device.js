@@ -9,12 +9,10 @@ const deviceInfoSchema = new mongoose.Schema({
   deviceIp: {
     type: String,
     unique: true,
-
   },
   deviceMAC: {
     type: String,
     unique: true,
-
   },
 });
 

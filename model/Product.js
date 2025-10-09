@@ -22,11 +22,6 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
 
-    oldPrice: {
-      type: Number, // Store the previous price of the product
-      default: null,
-    },
-
     images: [
       {
         url: {
@@ -100,16 +95,14 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    categorySlug:{
-
-        type: String,
-        required: true,
+    categorySlug: {
+      type: String,
+      required: true,
     },
 
-    brandSlug:{
-
+    brandSlug: {
       type: String,
-      required:true
+      required: true,
     },
 
     reviews: [

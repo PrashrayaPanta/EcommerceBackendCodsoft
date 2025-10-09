@@ -5,27 +5,15 @@ const Product = require("../model/Product");
 const cloudinary = require("cloudinary").v2; // Import the Brand model
 
 const getImageDetailsHandlerForBrand = async (req, res) => {
-  console.log("IUHDSKFHKJHDFJKLHSK sdfknkjsdnfkjn");
-
-  console.log("I am here kjnkjnjkn");
-
   try {
     console.log("I am inside the image details handler for brand");
 
-    // const {filename1, nodejsProductImages} = req.params;
-
-    // console.log(nodejsProductImages);
-
-    console.log("IUGHiuhbhju");
-
-    const { filename, nodejsBrandImage } = req.params; // Extract parameters from the request
-
-    console.log(filename, nodejsBrandImage);
-
-    console.log("Fetching image for:", filename, nodejsBrandImage);
+    const { filename } = req.params;
 
     // Combine folder name and filename to form the public ID
-    const publicIDBrand = `${nodejsBrandImage}/${filename}`;
+    const publicIDBrandImage = `nodejsBrandImage/${filename}`;
+
+    console.log(publicIDBrandImage);
 
     // console.log("sdiofjiosdjnfkjnkjsdfnjkv");
 
@@ -36,19 +24,30 @@ const getImageDetailsHandlerForBrand = async (req, res) => {
     // console.log(publicID)
 
     // Fetch image details from Cloudinary  `
-    const result = await cloudinary.api.resource(publicIDBrand);
+    // const result = await cloudinary.api.resource(publicIDBrand);
+
+    const result = await cloudinary.url(publicIDBrandImage, {
+      quality: "auto",
+      fetch_format: "auto",
+      secure: true,
+    });
+
+    console.log(result);
+
+    res.redirect(result);
+
     // const result1 = await cloudinary.api.resource(publicIdProduct);
 
     // console.log(result1);
 
     // Check if the result contains a secure URL or if the image exists
 
-    if (!result || !result.secure_url) {
-      return res.status(404).json({ message: "Image not found in Cloudinary" });
-    }
+    // if (!result || !result.secure_url) {
+    //   return res.status(404).json({ message: "Image not found in Cloudinary" });
+    // }
 
     // Redirect the client to the image URL
-    res.redirect(result.secure_url);
+    // res.redirect(result.secure_url);
   } catch (error) {
     console.error("Error fetching image details:", error.message);
 
@@ -62,18 +61,9 @@ const getImageDetailsHandlerForBrand = async (req, res) => {
 
 const getImageDetailsHandlerForProduct = async (req, res) => {
   try {
+    console.log("Ia m inside the get Image handler for product");
+
     const { filename } = req.params;
-
-
-
-
-    // console.log(req.path);
-
-    // const twoArray = req.path.split("/");
-
-    // console.log(twoArray[1]);
-
-    // console.log(nodejsProductImages);
 
     // Combine folder name and filename to form the public ID
     const publicID = `nodejsProductImages/${filename}`;
@@ -81,32 +71,22 @@ const getImageDetailsHandlerForProduct = async (req, res) => {
     // Fetch image details from Cloudinary  `
     // const result = await cloudinary.api.resource(publicID);
 
-
-    
-    const result =  cloudinary.url(publicID, {
+    const result = cloudinary.url(publicID, {
       quality: "auto",
       fetch_format: "auto",
+      secure: true,
     });
-
-  
-
 
     // console.log("succesfull get the image");
 
-
     // console.log(result);
 
-    // console.log(result);
+    console.log(result);
 
-    res.redirect(result)
-    
-
-    
+    res.redirect(result);
 
     // Redirect the client to the image URL
     // res.redirect(result.secure_url);
-
-
   } catch (error) {
     console.log(error);
   }
@@ -114,31 +94,40 @@ const getImageDetailsHandlerForProduct = async (req, res) => {
 
 const deleteOnlyImageHandlerForBrand = async (req, res) => {
   console.log("I am inside here deleye image for brand");
-  const { id } = req.params;
+  const { slug } = req.params;
+
+  console.log(slug);
 
   const { filename } = req.params;
 
-  const { whichfolderinside } = req.params; // Get the folder name from request parameters
+  const publicIdBrandImage = `nodejsBrandImage/${filename}`;
 
-  const publicIdFull = whichfolderinside + "/" + filename;
-
-  console.log(publicIdFull);
+  console.log(publicIdBrandImage);
 
   try {
     // Delete the image from Cloudinary
-    await cloudinary.uploader.destroy(publicIdFull);
+
+    await cloudinary.uploader.destroy(publicIdBrandImage);
+
+    console.log("Image deleted succesfully from cloudinary");
+
+    // res.json({ message: "deelete Succesfully The bfrand image on cloudinary" });
 
     // Update the Brand document to remove the logo
-    await Brand.findByIdAndUpdate(
-      id,
+    await Brand.findOneAndUpdate(
+      { slug },
       { logo: null }, // Set the logo field to null
       { new: true }
     );
 
     res.status(200).json({
-      message: "Image deleted successfully and brand updated",
+      message: "Image deleted successfully and brand image logo is null",
+      success: "true",
+      status: "success",
+      data: null,
     });
   } catch (error) {
+    //If publicid is not present in cloudinary
     res.status(500).json({
       message: "Failed to delete image",
       error: error.message,
@@ -156,12 +145,9 @@ const deleteImageHandlerForProduct = async (req, res) => {
 
   console.log(filename);
 
-
-  
   const publicIdFull = `nodejsproductImages/${filename}`;
 
   // console.log(publicIdFull);
-  
 
   // console.log(publicIdFull);
 
@@ -171,37 +157,29 @@ const deleteImageHandlerForProduct = async (req, res) => {
 
     const product = await Product.findById(id);
 
-
     console.log(product);
-    
 
     // console.log(product);
 
     const Images = product?.images;
 
     console.log(Images);
-    
 
     //filter on the basis of public_id match or not
     const filteredArrayImage = Images.filter(
       (image) => image.public_id !== publicIdFull
     );
 
-
     console.log(filteredArrayImage);
-    
 
-   
-      // Update the Product document to remove the
-    const updatedProduct =   await Product.findByIdAndUpdate(
-        id,
-        { images: filteredArrayImage }, // set the images with filteredArrayImage
-        { new: true }
-      );
+    // Update the Product document to remove the
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { images: filteredArrayImage }, // set the images with filteredArrayImage
+      { new: true }
+    );
 
     console.log(updatedProduct);
-      
-
 
     res.status(200).json({
       message: "Image deleted successfully and Product updated",

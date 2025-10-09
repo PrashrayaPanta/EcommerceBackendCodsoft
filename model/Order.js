@@ -16,7 +16,6 @@ const orderSchema = new mongoose.Schema(
           required: true,
         },
 
-        
         quantity: {
           type: Number,
           required: true,
@@ -37,7 +36,14 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "processing", "confirmed", "shipping", "delivered", "cancelled"],
+      enum: [
+        "pending",
+        "processing",
+        "confirmed",
+        "shipping",
+        "delivered",
+        "cancelled",
+      ],
       default: "pending",
     },
   },

@@ -30,12 +30,6 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: Number,
     },
-    orders: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order", // Reference to the Order model
-      },
-    ],
   },
   {
     timestamps: true,

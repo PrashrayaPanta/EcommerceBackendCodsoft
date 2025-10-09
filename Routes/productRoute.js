@@ -71,7 +71,7 @@ productRoute.get("/products/Latestproducts", productCtrl.Latestproducts);
 
 productRoute.get("/products/lowtohigh", productCtrl.lowtoHighPriceProduct);
 
-productRoute.get("/products/:id", productCtrl.getCertainproduct);
+productRoute.get("/products/:slug", productCtrl.getCertainproduct);
 
 // productRoute.get("/frontend/latestproducts", )
 
@@ -90,7 +90,7 @@ productRoute.put(
 // productRoute.get("/search",  isAuthenticated, isAdmin,  productCtrl.searchproduct);
 
 productRoute.get(
-  "/admin/products/:id",
+  "/admin/products/:slug",
   isAuthenticated,
   isAdmin,
   productCtrl.getCertainproduct
@@ -109,21 +109,14 @@ productRoute.get(
 );
 
 productRoute.delete(
-  "/admin/products/:id",
+  "/admin/products/:slug",
   isAuthenticated,
   isAdmin,
   productCtrl.deleteproduct
 );
 
-productRoute.delete(
-  "/admin/products/:productId/reviews/:reviewId",
-  isAuthenticated,
-  isAdmin,
-  productCtrl.deleteCertainProductReview
-);
-
 productRoute.get(
-  "/admin/products/:id/reviews",
+  "/admin/products/:slug/reviews",
   isAuthenticated,
   isAdmin,
   productCtrl.getCertainProductReviews
@@ -134,13 +127,13 @@ productRoute.get(
 // productRoute.get("/search",  isAuthenticated,  productCtrl.searchproduct);
 
 productRoute.post(
-  "/products/:id/reviews",
+  "/products/:slug/reviews",
   isAuthenticated,
   productCtrl.createCertainProductReviews
 );
 
 productRoute.get(
-  "/products/:id/reviews",
+  "/products/:slug/reviews",
   isAuthenticated,
   productCtrl.getCertainProductReviews
 );

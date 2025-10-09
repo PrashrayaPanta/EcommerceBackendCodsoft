@@ -7,80 +7,99 @@ const Post = require("../model/Product.js");
 
 const categoryCtrl = {
   createCategory: asyncHandler(async (req, res) => {
-    const { name} = req.body;
+    console.log("I am inside the create catgeory cointrooler");
 
+    const { name } = req.body;
 
+    console.log(name);
 
-    const slug = name.toLowerCase();
+    //track the uniqueness of name
+    const categoryname = await Category.findOne({ name });
 
-
-
-    // console.log(slug);
-
-    //! Track the uniqueness of categoryName field
-
-    const category = await Category.findOne({ name });
-
-    if (category) {
-      return res.status(400).json({ message: "Category should be unique" });
+    if (categoryname) {
+      return res.status(400).json({
+        message: "Category should be unique",
+        succcess: false,
+        data: null,
+      });
     }
+
+    const slug = name?.toLowerCase().split(" ").join("-");
+
+    console.log(slug);
+
+    const slugName = await Category.findOne({ slug });
+
+    if (slugName) {
+      return res
+        .status(400)
+        .json({ message: "Slug should be unique", success: false, data: null });
+    }
+    // console.log(slug);
 
     const categoryCreated = await Category.create({ name, slug });
 
-    res.status(201).json({ categoryCreated });
+    res.status(201).json({
+      message: "Created Successfully",
+      success: true,
+      data: categoryCreated,
+    });
   }),
 
   deleteCategory: asyncHandler(async (req, res) => {
     //get the id
-    const { id } = req.params;
+    const { slug } = req.params;
 
-    //get Category collection deleted document in object form
-    const deletedCategory = await Category.findByIdAndDelete(id);
+    console.log(slug);
 
-    res.json({ message: "Deleted Certain Catgeory", deletedCategory });
+    await Category.findOneAndDelete({ slug });
 
-    console.log(deletedCategory);
+    res.json({
+      message: "Deleted Certain Catgeory",
+      status: "true",
+      data: null,
+      status: "success",
+    });
   }),
 
   getAllCategory: asyncHandler(async (req, res) => {
-
     console.log("I am inside get all category");
     const Categories = await Category.find();
 
-    res.json({  Categories }).status(203);
+    res
+      .json({
+        message: "Categories get ",
+        status: "success",
+        data: Categories,
+      })
+      .status(203);
   }),
 
-  getCertainCategory: asyncHandler(async (req, res) => {
-    console.log("I am inside certain category controller");
-
+  getCategoryBySlug: asyncHandler(async (req, res) => {
     const { slug } = req.params;
 
-    // Validate the `id`
-    // if (!mongoose.Types.ObjectId.isValid(id)) {
-    //   return res.status(400).json({ message: "Invalid category ID" });
-    // }
-
-    const category = await Category.find({slug});
+    const category = await Category.findOne({ slug });
 
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res
+        .status(404)
+        .json({ message: "Category not found", status: "failed", data: null });
     }
 
-    console.log(category);
-
-    res
-      .status(201)
-      .json({ message: "Certain Category Fetched Successfully", category });
+    res.status(201).json({
+      message: "Certain Category Fetched Successfully",
+      status: "true",
+      data: category,
+    });
   }),
 
   EditCertainCategory: asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { slug } = req.params;
     const { name } = req.body;
 
-    
-    const slug = name.toLowerCase();
+    const slugtoupdate = name.toLowerCase();
 
-    const categoryDocument = await Category.findById(id);
+    const categoryDocument = await Category.findOne({ slug });
 
     if (!categoryDocument) {
       return res.status(404).json({ message: "Category not found" });
@@ -92,9 +111,9 @@ const categoryCtrl = {
       });
     }
 
-    const afterUpdation = await Category.findByIdAndUpdate(
-      id,
-      { name, slug },
+    const afterUpdation = await Category.findOneAndUpdate(
+      { slug },
+      { name, slug: slugtoupdate },
       { new: true }
     );
 

@@ -85,7 +85,7 @@ const userCtrl = {
       throw new Error("Invalid ceredentials");
     }
 
-    //! Genrate the token
+    //! Generate the token
 
     const token = jwt.sign({ id: user._id }, process.env.api_key, {
       expiresIn: "30d",
@@ -106,14 +106,7 @@ const userCtrl = {
     // Find the user and populate the address, orders, and product details inside items
     const user = await User.findById(req.user_id)
       .select("-password") // Exclude the password field
-      .populate("address") // Populate the address field
-      .populate({
-        path: "orders", // Populate the orders field
-        populate: {
-          path: "items.product_id", // Populate product_id inside items
-          select: "name description finalPrice", // Select specific fields from the Product model
-        },
-      });
+      .populate("address"); // Populate the address field
 
     if (!user) {
       throw new Error("User not found");
