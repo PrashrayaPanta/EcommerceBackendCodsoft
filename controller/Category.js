@@ -102,7 +102,7 @@ const categoryCtrl = {
     const categoryDocument = await Category.findOne({ slug });
 
     if (!categoryDocument) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "" });
     }
 
     if (categoryDocument.name === name) {
@@ -119,7 +119,7 @@ const categoryCtrl = {
 
     res.status(202).json({
       message: "Updated successfully",
-      categoryDocumentAfterUpdation: afterUpdation,
+      data: afterUpdation,
     });
   }),
 

@@ -276,7 +276,7 @@ const productCtrl = {
 
     console.log(req.files);
 
-    const { id } = req.params;
+    const { slug } = req.params;
 
     // console.log(id);
 
@@ -309,7 +309,7 @@ const productCtrl = {
 
     const brand = await Brand.findById(brandId);
 
-    const product = await Product.findById(id);
+    const product = await Product.findOne({ slug });
 
     console.log(product);
 
@@ -323,18 +323,21 @@ const productCtrl = {
     //   throw new Error("Same Name");
     // }
 
-    const updateProduct = await Product.findByIdAndUpdate(id, {
-      name,
-      summary,
-      description,
-      categoryId,
-      brandId,
-      images,
-      initialPrice,
-      discountedPrice,
-      categoryName: category?.name,
-      brandName: brand?.name,
-    });
+    const updateProduct = await Product.findOneAndUpdate(
+      { slug },
+      {
+        name,
+        summary,
+        description,
+        categoryId,
+        brandId,
+        images,
+        initialPrice,
+        discountedPrice,
+        categoryName: category?.name,
+        brandName: brand?.name,
+      }
+    );
 
     console.log(updateProduct);
 

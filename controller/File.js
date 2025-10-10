@@ -137,9 +137,7 @@ const deleteOnlyImageHandlerForBrand = async (req, res) => {
 
 const deleteImageHandlerForProduct = async (req, res) => {
   console.log("I am inside the delete image handler for product");
-  const { id } = req.params;
-
-  console.log(id);
+  const { slug } = req.params;
 
   const { filename } = req.params;
 
@@ -155,9 +153,7 @@ const deleteImageHandlerForProduct = async (req, res) => {
     // Delete the image from Cloudinary
     await cloudinary.uploader.destroy(publicIdFull);
 
-    const product = await Product.findById(id);
-
-    console.log(product);
+    const product = await Product.findOne({ slug });
 
     // console.log(product);
 
@@ -173,8 +169,8 @@ const deleteImageHandlerForProduct = async (req, res) => {
     console.log(filteredArrayImage);
 
     // Update the Product document to remove the
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
+    const updatedProduct = await Product.findOneAndUpdate(
+      { slug },
       { images: filteredArrayImage }, // set the images with filteredArrayImage
       { new: true }
     );

@@ -10,58 +10,55 @@ const multer = require("multer");
 
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const isAdmin = require("../middleware/isAdmin.js");
-
 const {
   deleteOnlyImageHandler,
   getImageDetailsHandlerForProduct,
   deleteImageHandlerForProduct,
 } = require("../controller/File.js");
+const { cloudinary } = require("../config/clodinaryConfig.js");
 
-const cloudinary = require("cloudinary").v2;
-
-//! Configure cloudinary
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-//!Configure multer storage cloudinary for image
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "nodejsproductImages",
-    allowedFormat: ["png", "jpeg"],
-    public_id: (req, file) => file.fieldname + "_" + Date.now(),
-  },
-});
+const WhereStorage = (folder) => {
+  //!Configure multer storage cloudinary for image
+  return new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: folder,
+      allowedFormat: ["png", "jpeg"],
+      public_id: (req, file) => file.fieldname + "_" + Date.now(),
+    },
+  });
+};
 
 ///!Configure Multer for uploading image
+const upload = (folder, maxsizeMb = 5) => {
+  return multer({
+    storage: WhereStorage(folder),
+    limits: 1024 * 1024 * 5, //5MB LIMIt
+    fileFilter: function (req, file, cb) {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Not an image plz upload an image", false));
+      }
+    },
+  });
+};
 
-const upload = multer({
-  storage,
-  limits: 1024 * 1024 * 5, //5MB LIMIt
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Not an image plz upload an image", false));
-    }
-  },
-});
+module.exports = { upload };
+
+// Upload folder name
+const PRODUCT_IMAGES_FOLDER = "nodejsproductImages";
 
 productRoute.post(
   "/admin/products",
   isAuthenticated,
   isAdmin,
-  upload.array("images"),
+  upload(PRODUCT_IMAGES_FOLDER).array("images"),
   productCtrl.createProduct
 );
 
 productRoute.delete(
-  "/admin/products/:id/nodejsProductImages/:filename",
+  "/admin/products/:slug/nodejsProductImages/:filename",
   deleteImageHandlerForProduct
 );
 
@@ -76,10 +73,10 @@ productRoute.get("/products/:slug", productCtrl.getCertainproduct);
 // productRoute.get("/frontend/latestproducts", )
 
 productRoute.put(
-  "/admin/products/:id",
+  "/admin/products/:slug",
   isAuthenticated,
   isAdmin,
-  upload.array("images"),
+  upload(PRODUCT_IMAGES_FOLDER).array("images"),
   productCtrl.updateCertainproduct
 );
 
