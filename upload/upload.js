@@ -1,5 +1,7 @@
 const { cloudinary } = require("../config/clodinaryConfig");
 
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const WhereStorage = (folder) => {
   //!Configure multer storage cloudinary for image
   return new CloudinaryStorage({

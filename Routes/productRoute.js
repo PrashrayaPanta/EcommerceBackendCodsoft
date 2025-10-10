@@ -6,45 +6,14 @@ const isAuthenticated = require("../middleware/isAuth");
 
 const productRoute = express.Router();
 
-const multer = require("multer");
+const { upload } = require("../upload/upload.js");
 
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const isAdmin = require("../middleware/isAdmin.js");
 const {
   deleteOnlyImageHandler,
   getImageDetailsHandlerForProduct,
   deleteImageHandlerForProduct,
 } = require("../controller/File.js");
-const { cloudinary } = require("../config/clodinaryConfig.js");
-
-const WhereStorage = (folder) => {
-  //!Configure multer storage cloudinary for image
-  return new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: folder,
-      allowedFormat: ["png", "jpeg"],
-      public_id: (req, file) => file.fieldname + "_" + Date.now(),
-    },
-  });
-};
-
-///!Configure Multer for uploading image
-const upload = (folder, maxsizeMb = 5) => {
-  return multer({
-    storage: WhereStorage(folder),
-    limits: 1024 * 1024 * 5, //5MB LIMIt
-    fileFilter: function (req, file, cb) {
-      if (file.mimetype.startsWith("image/")) {
-        cb(null, true);
-      } else {
-        cb(new Error("Not an image plz upload an image", false));
-      }
-    },
-  });
-};
-
-module.exports = { upload };
 
 // Upload folder name
 const PRODUCT_IMAGES_FOLDER = "nodejsproductImages";
