@@ -11,41 +11,41 @@ const productCtrl = require("../controller/Product.js");
 const productRoute = require("./productRoute.js");
 
 const isAdmin = require("../middleware/isAdmin.js");
+const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
 
-//! Admin
-
+//! AdminorStaff
 categoryRoute.post(
-  "/admin/categories",
+  "/cms/categories",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   categoryCtrl.createCategory
 );
 
 categoryRoute.put(
-  "/admin/categories/:slug",
+  "/cms/categories/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   categoryCtrl.EditCertainCategory
 );
 
 categoryRoute.delete(
-  "/admin/categories/:slug",
+  "/cms/categories/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   categoryCtrl.deleteCategory
 );
 
 categoryRoute.get(
-  "/admin/categories/:slug",
+  "/cms/categories/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   categoryCtrl.getCategoryBySlug
 );
 
 categoryRoute.get(
-  "/admin/categories",
+  "/cms/categories",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   categoryCtrl.getAllCategory
 );
 
