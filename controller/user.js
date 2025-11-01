@@ -14,7 +14,7 @@ const userCtrl = {
 
     console.log("I am inside register controler");
 
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     console.log(req.file);
 
@@ -49,6 +49,7 @@ const userCtrl = {
       password: hashedPassword,
       email,
       profileImageUrl: req?.file?.path,
+      role: role,
     });
 
     console.log(userCreated);
@@ -197,6 +198,65 @@ const userCtrl = {
     res.status(200).json({ message: "Delete Succesfully" });
 
     console.log("I am delete account Controller");
+  }),
+
+  CreateStaffs: asyncHandler(async (req, res) => {
+    console.log("I am insdie the ceate staff controller");
+
+    const { email, username, password, address, phoneno } = req.body;
+
+    if (!email || !username || !password || !address || !phoneno) {
+      throw new Error("Validation failed");
+    }
+
+    const user = await User.findOne({ username });
+
+    if (user) {
+      throw new Error("username already exist");
+    }
+
+    const emailFound = await User.findOne({ email });
+
+    if (emailFound) {
+      throw new Error("Email already exist");
+    }
+
+    // hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const created = await User.create({
+      email,
+      username,
+      password: hashedPassword,
+      phoneno,
+      address,
+      role: "staff",
+    });
+
+    res.json({
+      message: "Staff Created",
+      status: "success",
+      data: {
+        id: created._id,
+        email: created.email,
+        username: created.username,
+      },
+    });
+  }),
+
+  ListStaffs: asyncHandler(async (req, res) => {
+    const staffs = await User.find({ role: "staff" }).select("-password ");
+
+    res.json(staffs);
+  }),
+
+  deleteStaffs: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Staff deleted", status: "success" });
   }),
 };
 
