@@ -5,30 +5,29 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    address: {
+      type: String,
+    },
+    phoneno: {
+      type: Number,
+    },
+    role: {
+      type: String,
+      enum: ["customer", "staff", "admin"], // Allowed roles
+      default: "customer",
+      required: false,
     },
     profileImageUrl: {
       type: String,
-    },
-    address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address", // Reference to the Address model
-    },
-    phone: {
-      type: Number,
     },
   },
   {
