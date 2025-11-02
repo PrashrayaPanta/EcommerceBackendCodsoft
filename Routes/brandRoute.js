@@ -7,9 +7,6 @@ const brandRoute = express.Router();
 const brandCtrl = require("../controller/Brand.js");
 const isAdmin = require("../middleware/isAdmin.js");
 
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const multer = require("multer");
-
 const {
   deleteOnlyImageHandlerForBrand,
   getImageDetailsHandlerForBrand,
@@ -17,78 +14,59 @@ const {
 
 const productRoute = require("./productRoute.js");
 const productCtrl = require("../controller/Product.js");
+const { upload } = require("../upload/upload.js");
+const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
 
-const { cloudinary } = require("../config/clodinaryConfig.js");
-// Configure Cloudinary Storage
+// Upload folder name
+const Brand_IMAGES_FOLDER = "nodejsbrandImages";
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "nodejsBrandImage",
-    public_id: (req, file) => file.fieldname + "_" + Date.now(),
-  },
-});
-
-// Configure Multer for image uploads
-const upload = multer({
-  storage,
-  limits: 1024 * 1024 * 5, // 5MB limit
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Not an image, please upload an image"), false);
-    }
-  },
-});
-
-//! Admin
+//! Admin and Staff Routes for Brand Management
 
 brandRoute.post(
-  "/admin/brands",
+  "/cms/brands",
   isAuthenticated,
-  isAdmin,
-  upload.single("image"),
+  isAdminOrStaff,
+  upload(Brand_IMAGES_FOLDER).single("image"),
   brandCtrl.createBrand
 );
 
 brandRoute.get(
-  "/admin/brands/:slug",
+  "/cms/brands/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   brandCtrl.GetCertainBrand
 );
 
 brandRoute.delete(
-  "/admin/brands/:slug",
+  "/cms/brands/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   brandCtrl.deleteCertainBrand
 );
 
 brandRoute.put(
-  "/admin/brands/:slug",
+  "/cms/brands/:slug",
   isAuthenticated,
-  isAdmin,
-  upload.single("image"),
+  isAdminOrStaff,
+  upload(Brand_IMAGES_FOLDER).single("image"),
   brandCtrl.EditCertainBrand
 );
 
 brandRoute.delete(
-  "/admin/brands/:slug/nodejsBrandImage/:filename",
+  "/cms/brands/:slug/nodejsBrandImages/:filename",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   deleteOnlyImageHandlerForBrand
 );
 
-brandRoute.get("/brands/:slug", brandCtrl.GetCertainBrand);
+brandRoute.get("/cms/brands", brandCtrl.getAllBrand);
 
-brandRoute.get("/admin/brands", brandCtrl.getAllBrand);
+brandRoute.get("/brands/:slug", brandCtrl.GetCertainBrand);
 
 productRoute.get("/brands/:slug/products", productCtrl.getAllProductByBrandId);
 
 brandRoute.get(
-  "/brands/nodejsBrandImage/:filename",
+  "/brands/nodejsBrandImages/:filename",
   getImageDetailsHandlerForBrand
 );
 
