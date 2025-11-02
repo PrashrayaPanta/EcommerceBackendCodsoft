@@ -9,25 +9,27 @@ const productRoute = express.Router();
 const { upload } = require("../upload/upload.js");
 
 const isAdmin = require("../middleware/isAdmin.js");
+
 const {
   deleteOnlyImageHandler,
   getImageDetailsHandlerForProduct,
   deleteImageHandlerForProduct,
 } = require("../controller/File.js");
+const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
 
 // Upload folder name
 const PRODUCT_IMAGES_FOLDER = "nodejsproductImages";
 
 productRoute.post(
-  "/admin/products",
+  "/cms/products",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   upload(PRODUCT_IMAGES_FOLDER).array("images"),
   productCtrl.createProduct
 );
 
 productRoute.delete(
-  "/admin/products/:slug/nodejsProductImages/:filename",
+  "/cms/products/:slug/nodejsProductImages/:filename",
   deleteImageHandlerForProduct
 );
 
@@ -42,9 +44,9 @@ productRoute.get("/products/:slug", productCtrl.getCertainproduct);
 // productRoute.get("/frontend/latestproducts", )
 
 productRoute.put(
-  "/admin/products/:slug",
+  "/cms/products/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   upload(PRODUCT_IMAGES_FOLDER).array("images"),
   productCtrl.updateCertainproduct
 );
@@ -56,35 +58,35 @@ productRoute.put(
 // productRoute.get("/search",  isAuthenticated, isAdmin,  productCtrl.searchproduct);
 
 productRoute.get(
-  "/admin/products/:slug",
+  "/cms/products/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   productCtrl.getCertainproduct
 );
 
 productRoute.get(
-  "/admin/products",
+  "/cms/products",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   productCtrl.getAllproduct
 );
 
 productRoute.get(
-  "/nodejsProductImages/:filename",
+  "/products/nodejsProductImages/:filename",
   getImageDetailsHandlerForProduct
 );
 
 productRoute.delete(
-  "/admin/products/:slug",
+  "/cms/products/:slug",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   productCtrl.deleteproduct
 );
 
 productRoute.get(
-  "/admin/products/:slug/reviews",
+  "/cms/products/:slug/reviews",
   isAuthenticated,
-  isAdmin,
+  isAdminOrStaff,
   productCtrl.getCertainProductReviews
 );
 
