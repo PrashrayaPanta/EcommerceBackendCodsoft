@@ -4,6 +4,7 @@ const isAuthenticated = require("../middleware/isAuth");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
+const isAdminOrStaff = require("../middleware/isAdminOrStaff");
 const isAdmin = require("../middleware/isAdmin");
 
 // Configure Cloudinary
@@ -40,8 +41,7 @@ const userRoute = express.Router();
 userRoute.post("/users/register", upload.single("image"), userCtrl.register);
 userRoute.post("/users/login", userCtrl.login); // Login
 
-//! Admin  Route
-
+//! Customer  Route
 userRoute.get("/users/profile", isAuthenticated, userCtrl.Profile);
 userRoute.put("/users/profile/edit", isAuthenticated, userCtrl.EditProfile); // Edit profile
 
@@ -66,5 +66,24 @@ userRoute.delete("/users/profile/:id", isAuthenticated, userCtrl.DeleteAccount);
 // );
 
 // Delete account
+
+//! Staff route
+
+userRoute.post(
+  "/admin/staffs",
+  isAuthenticated,
+  isAdmin,
+  userCtrl.CreateStaffs
+); // Create staff
+
+// list staffs (admin)
+userRoute.get("/admin/staffs", isAuthenticated, isAdmin, userCtrl.ListStaffs);
+
+userRoute.delete(
+  "/admin/staffs/:id",
+  isAuthenticated,
+  isAdmin,
+  userCtrl.deleteStaffs
+);
 
 module.exports = userRoute;

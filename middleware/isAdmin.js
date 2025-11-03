@@ -1,12 +1,12 @@
 const User = require("../model/User");
 
 const isAdmin = async (req, res, next) => {
+  console.log("I am inside isAdmin middleware");
+
   try {
     const user = await User.findById(req.user_id);
 
-    console.log(typeof user.isAdmin);
-
-    if (!user || !user.isAdmin) {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Access denied. Admins only." });
     }
 
