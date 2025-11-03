@@ -15,7 +15,6 @@ const subCategory = require("../model/SubCategory.js");
 const Brand = require("../model/Brand.js");
 const { deleteOnlyImageHandler } = require("./File.js");
 const Review = require("../model/Review.js");
-const PriceHistory = require("../model/PriceHistory.js"); // Import the PriceHistory model
 
 const productCtrl = {
   createProduct: asyncHandler(async (req, res) => {
@@ -25,28 +24,30 @@ const productCtrl = {
       name,
       description,
       categoryId,
-      initialPrice,
+      originalPrice,
+      price,
       colors,
       sizes,
       brandId,
       summary,
-      discountedPrice,
     } = req.body;
 
-    if (!name || !description || !categoryId || !initialPrice) {
+    console.log(req.body);
+
+    if (!name || !description || !categoryId || !originalPrice) {
       return res
         .status(400)
         .json({ message: "Some fields are missing in the request body" });
     }
 
-    console.log("I am after the empty validation");
+    // console.log("I am after the empty validation");
 
     const productFromProduct = await Product.findOne({ name });
 
     if (productFromProduct) {
       return res.status(400).json({
         message: "Product with this name already exists",
-        sttaus: "false",
+        status: "false",
         data: null,
       });
     }
@@ -115,8 +116,8 @@ const productCtrl = {
       name,
       summary,
       description,
-      initialPrice,
-      discountedPrice,
+      originalPrice,
+      price,
       slug,
       colors: parsedColors,
       sizes: parsedSizes,
@@ -212,7 +213,6 @@ const productCtrl = {
   }),
 
   getCertainproduct: asyncHandler(async (req, res) => {
-    console.log("Hello I am inside get product By Id");
     const { slug } = req.params;
 
     const product = await Product.findOne({ slug });
@@ -253,11 +253,11 @@ const productCtrl = {
 
     console.log(slug);
 
-    const products = await Product.find({ brandName: slug });
+    const products = await Product.find({ brandSlug: slug });
 
-    console.log(products);
+    // console.log(products);
 
-    res.json({ products });
+    res.json({ products, status: "true" });
   }),
 
   getAllProductsBySubCategoryId: asyncHandler(async (req, res) => {
@@ -272,26 +272,10 @@ const productCtrl = {
 
   //! Update the product
   updateCertainproduct: asyncHandler(async (req, res) => {
-    console.log("I am inside the edit certain product controoler");
-
-    console.log(req.files);
+    console.log("I am inside the edit certain product controller");
+    console.log("req.file:", req.file);
 
     const { slug } = req.params;
-
-    // console.log(id);
-
-    console.log(req.files);
-
-    const images = await Promise.all(
-      req.files?.map(async (file) => {
-        return {
-          url: file.path,
-          public_id: file.filename,
-        };
-      })
-    );
-
-    // console.log(images);
 
     const {
       name,
@@ -299,16 +283,14 @@ const productCtrl = {
       summary,
       categoryId,
       brandId,
-      initialPrice,
-      discountedPrice,
+      originalPrice,
+      price,
     } = req.body;
 
     console.log(name, description, summary, categoryId, brandId);
 
     const category = await Category.findById(categoryId);
-
     const brand = await Brand.findById(brandId);
-
     const product = await Product.findOne({ slug });
 
     console.log(product);
@@ -317,31 +299,53 @@ const productCtrl = {
       throw new Error("Product Not Found");
     }
 
-    // console.log(product);
+    // Prepare update object with basic fields
+    const updateData = {
+      name,
+      summary,
+      description,
+      categoryId,
+      brandId,
+      originalPrice,
+      price,
+      categoryName: category?.name,
+      brandName: brand?.name,
+      categorySlug: category?.slug,
+      brandSlug: brand?.slug,
+    };
 
-    // if(product.name === name && product.description === description  && product.summary === summary && product.category_id === categoryId && product.brand_id === brandId ){
-    //   throw new Error("Same Name");
-    // }
+    // Handle images: only update if new files are uploaded
+    if (req.files && req.files.length > 0) {
+      console.log("New files uploaded:", req.files.length);
+      const newImages = await Promise.all(
+        req.files.map(async (file) => {
+          return {
+            url: file.path,
+            public_id: file.filename,
+          };
+        })
+      );
+      // Merge new images with existing images
+      const existingImages = product.images || [];
+      updateData.images = [...existingImages, ...newImages];
+      console.log("Total images after merge:", updateData.images.length);
+    } else {
+      console.log("No new files, keeping existing images");
+      // Keep existing images if no new images are uploaded
+      updateData.images = product.images;
+    }
 
-    const updateProduct = await Product.findOneAndUpdate(
-      { slug },
-      {
-        name,
-        summary,
-        description,
-        categoryId,
-        brandId,
-        images,
-        initialPrice,
-        discountedPrice,
-        categoryName: category?.name,
-        brandName: brand?.name,
-      }
-    );
+    const updateProduct = await Product.findOneAndUpdate({ slug }, updateData, {
+      new: true,
+    });
 
     console.log(updateProduct);
 
-    res.json({ message: "Updated succesfully", updateProduct });
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      data: updateProduct,
+    });
   }),
 
   getCertainproductCategory: asyncHandler(async (req, res) => {
