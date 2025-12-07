@@ -10,29 +10,19 @@ const getImageDetailsHandlerForBrand = async (req, res) => {
 
     const { filename } = req.params;
 
+    console.log(filename);
+
     // Combine folder name and filename to form the public ID
-    const publicIDBrandImage = `nodejsBrandImage/${filename}`;
+    const publicIDBrandImage = `nodejsBrandImages/${filename}`;
 
     console.log(publicIDBrandImage);
 
-    // console.log("sdiofjiosdjnfkjnkjsdfnjkv");
-
-    // const publicIdProduct = `${nodejsProductImages}/${filename1}`
-
-    // console.log("Fetching details for publicId:", publicID);
-
-    // console.log(publicID)
-
-    // Fetch image details from Cloudinary  `
-    // const result = await cloudinary.api.resource(publicIDBrand);
-
+    // Fetch image details from Cloudinary with optimized URL on the basis of Image
     const result = await cloudinary.url(publicIDBrandImage, {
       quality: "auto",
       fetch_format: "auto",
       secure: true,
     });
-
-    console.log(result);
 
     res.redirect(result);
 
