@@ -23,27 +23,25 @@ const orderCtrl = {
         }
 
         // Check if the product price has changed
-        const priceAtPurchase = product.finalPrice; // Use the current price as the default
-        const oldPrice = item.oldPrice; // Assume `oldPrice` is passed in the request body
+        const priceAtOrder = product.price; // Use the current price as the default
+        const productNameAtOrder = product.name; // Assume `oldPrice` is passed in the request body
 
         return {
           product_id: item.product_id,
           quantity: item.quantity,
-          priceAtPurchase: oldPrice || priceAtPurchase, // Use oldPrice if provided, otherwise use current price
+          priceAtOrder,
+          productNameAtOrder,
+          totalPriceAtOrder: item.quantity * priceAtOrder,
         };
       })
     );
 
-    // Calculate total quantity and total price
-    const totalQuantity = processedItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = processedItems.reduce((sum, item) => sum + item.priceAtPurchase * item.quantity, 0);
+    console.log(processedItems);
 
     // Create the order
     const createOrder = await Order.create({
       user_id: req.user_id,
       items: processedItems,
-      totalQuantity,
-      totalPrice,
     });
 
     // Find the user and update their orders array
@@ -53,7 +51,7 @@ const orderCtrl = {
       return res.status(404).json({ message: "User not found" });
     }
 
-    userFound.orders.push(createOrder._id); // Push the new order ID into the orders array
+    userFound?.orders.push(createOrder?._id); // Push the new order ID into the orders array
     await userFound.save();
 
     res.json({
@@ -67,22 +65,16 @@ const orderCtrl = {
 
     const order = await Order.findByIdAndDelete(id);
 
-
     const userFound = await User.findById(req.user_id);
 
-
     // userFound
-
-
-
-
 
     res.json({ message: "succesfully delteed", deleteOrder: order });
   }),
 
   getAllOrder: asyncHandler(async (req, res) => {
     const orders = await Order.find().populate("user_id").populate({
-      path: "items.product_id"
+      path: "items.product_id",
     });
 
     res.json({ orders });
@@ -107,9 +99,7 @@ const orderCtrl = {
     const { id } = req.params;
     const { status } = req.body;
 
-
     console.log(typeof status);
-    
 
     // Validate status
     const validStatuses = [
@@ -149,9 +139,7 @@ const orderCtrl = {
   }),
 
   getCustomerOrderWithProduct: asyncHandler(async (req, res) => {
-    const orders = await Order.find()
-      .populate("user_id", "username email") // Populate user details
-  
+    const orders = await Order.find().populate("user_id", "username email"); // Populate user details
 
     console.log(orders);
 
