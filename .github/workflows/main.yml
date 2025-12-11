@@ -14,7 +14,7 @@ jobs:
         with:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USER }}
-          password: ${{ secrets.CPANEL_PASS }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/prashray/ecommercebackend.prashraya-panta.com.np
             git reset --hard HEAD
