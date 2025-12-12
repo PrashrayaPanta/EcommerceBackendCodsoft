@@ -15,6 +15,7 @@ jobs:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }} 
           port: 22
           script: |
             cd /home/prashray/ecommercebackend.prashraya-panta.com.np
