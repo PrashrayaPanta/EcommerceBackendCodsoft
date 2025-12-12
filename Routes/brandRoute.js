@@ -59,7 +59,12 @@ brandRoute.delete(
   deleteOnlyImageHandlerForBrand
 );
 
-brandRoute.get("/cms/brands", brandCtrl.getAllBrand);
+brandRoute.get(
+  "/cms/brands",
+  isAuthenticated,
+  isAdminOrStaff,
+  brandCtrl.getAllBrand
+);
 
 brandRoute.get("/brands/:slug", brandCtrl.GetCertainBrand);
 
