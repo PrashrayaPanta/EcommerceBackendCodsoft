@@ -51,7 +51,7 @@ const orderCtrl = {
       return res.status(404).json({ message: "User not found" });
     }
 
-    userFound?.orders.push(createOrder?._id); // Push the new order ID into the orders array
+    userFound?.orders?.push(createOrder?._id); // Push the new order ID into the orders array
     await userFound.save();
 
     res.json({
