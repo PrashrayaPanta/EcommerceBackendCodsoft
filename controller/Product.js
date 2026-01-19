@@ -16,6 +16,8 @@ const Brand = require("../model/Brand.js");
 const { deleteOnlyImageHandler } = require("./File.js");
 const Review = require("../model/Review.js");
 
+const paginate = require("../utils/pagination.js");
+
 const productCtrl = {
   createProduct: asyncHandler(async (req, res) => {
     console.log("Request body:", req.body); // Log the entire request body
@@ -383,8 +385,18 @@ const productCtrl = {
     });
   }),
 
-  //! Search product
+  //! Pagination
+  getThatMuchProduct: asyncHandler(async (req, res) => {
+    const limit = parseInt(req.query.limit);
 
+    const query = parseInt(req.query.page);
+
+    const result = await paginate(Product, query, limit);
+
+    res.status(200).json({ success: "true", result });
+  }),
+
+  //! Search product
   searchProduct: asyncHandler(async (req, res) => {
     const { query } = req;
 

@@ -35,7 +35,7 @@ productRoute.delete(
 
 productRoute.get("/products/search", productCtrl.searchProduct);
 
-productRoute.get("/products/Latestproducts", productCtrl.Latestproducts);
+productRoute.get("/products", productCtrl.getThatMuchProduct);
 
 productRoute.get("/products/lowtohigh", productCtrl.lowtoHighPriceProduct);
 
