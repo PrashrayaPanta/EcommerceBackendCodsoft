@@ -2,20 +2,63 @@
 
 ## Project Objective
 
-1. **Order Management**
+1. **Category Management**
+   CRUD Ctageory
+2. **Brand Management**  
+  Handle Brand Managemnt
 
-Customer Can Order the desired products and
-Manage orders, including creation, deletion, and retrieval.
-
-2. **Product Management**  
-   Handle product creation, updates, and deletion, including categories, and brands.
-
-3. **User Management**  
-   Manage user accounts, addresses, and associated device information.
+3. **Product Management**  
+   Hnadle Product Managemnt
 
 4. **Review System**  
-   Allow users to add, delete, and view reviews for products.
+   Allow users to add the review if customer is login only.
 
+5. **Role Managment
+   allow only admin to create staff and other brand , productr, category to be done by both admin and staff
+
+## Key Learning
+
+   FrontEnd Learning
+   
+   - Learned about browser storage 
+   - Learned about async operation handling.
+   - Learned the appproach of segrettating the project that is running through separte domain.
+   - Making the design Responsive and using position property.
+   - utilizing the useState and useEffect for api integration.
+   - learned about using redux tool kit for globalstate managemnt
+   - Learned about axios and axios interceptors for sharing the same baseURL and  error and success handling respectively
+     React Router Dom
+   - Make own private Route without using protected compoment of react router-dom
+   - Learned about Layout with implementaion as well
+   - Learned about Outlet with implementaion as well
+   - Learned about nesting route  with implementaion as well
+   - Learned about tanstackquery.
+
+
+   Backend Learning
+   - Learned about Databse design with implementation
+   - Learned about api routing for file deletion in edit feature wih implemnataion
+   - Improved the image optimization uisng latest feature of cloudinary.
+   - Learned about mongoose ORM with implementataion
+   - Learned about referncing approach for including category and brand in Product with implemenation
+   - Learned about mongodb backup .
+   - Learned about using making API Testing meachnism more easier saving for acessing the baseURL in enironment  using Postman
+   - Learned about mongodbcompass and atlas with implemenbtaion and run multiple mongodb server via different ports with implemenation
+   - Learned about cross origin request, prefligt request, and solved the cors error
+   - Learned about embeded approach modeling db through mongodb with implementaion
+   - Learned about built middleware, custom middleware for exaching the json response via api  with implmeneation as well.
+ 
+
+   Security Learning
+      - Learned about cross site scripting
+      - learned about DDOS attack and got awareness how to mitigate this issue
+      - Learned about advertsiment of express does.
+
+
+   Continous Deployemnt
+      - Learned about automating deployemnt ussing gituub workflow when pushed to github takes place (that is reflecting in domain as soon as pushed takesplace) with implemntaion as           well
+      - Learned about accesing the cpanel server without seeing through ui of cpanel server using terminal with implementaion as well
+      - Learned about docker image and docker container and run the server in another enviroment
 ## How to Run This Backend Project
 
 1. Install dependencies:
