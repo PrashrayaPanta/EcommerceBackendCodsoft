@@ -13,15 +13,14 @@
 4. **Review System**  
    Allow users to add the review if customer is login only.
 
-5 .Role Managment
+5. **Role Managment
    allow only admin to create staff and other brand , productr, category to be done by both admin and staff
 
 ## Key Learning
 
    FrontEnd Learning
    
-   - Learned about browser storage.
-   - Learned about 
+   - Learned about browser storage 
    - Learned about async operation handling.
    - Learned the appproach of segrettating the project that is running through separte domain.
    - Making the design Responsive and using position property.
