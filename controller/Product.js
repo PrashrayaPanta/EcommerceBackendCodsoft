@@ -30,6 +30,7 @@ const productCtrl = {
       price,
       colors,
       sizes,
+      stock,
       brandId,
       summary,
     } = req.body;
@@ -121,6 +122,7 @@ const productCtrl = {
       originalPrice,
       price,
       slug,
+      stock,
       colors: parsedColors,
       sizes: parsedSizes,
       categoryId,
@@ -286,6 +288,7 @@ const productCtrl = {
       categoryId,
       brandId,
       originalPrice,
+      stock,
       price,
     } = req.body;
 
@@ -310,6 +313,7 @@ const productCtrl = {
       brandId,
       originalPrice,
       price,
+      stock,
       categoryName: category?.name,
       brandName: brand?.name,
       categorySlug: category?.slug,
