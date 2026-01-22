@@ -3,9 +3,7 @@
 ## Project Objective
 
 1. **Category Management**
-   Customer Can Order the desired products and
-   Manage orders, including creation, deletion, and retrieval.
-
+   CRUD Ctageory
 2. **Brand Management**  
   Handle Brand Managemnt
 
