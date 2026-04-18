@@ -16,6 +16,8 @@ const {
   deleteImageHandlerForProduct,
 } = require("../controller/File.js");
 const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
+const withPagination = require("../middleware/withPagination.js");
+const Product = require("../model/Product.js");
 
 // Upload folder name
 const PRODUCT_IMAGES_FOLDER = "nodejsproductImages";
@@ -33,15 +35,17 @@ productRoute.delete(
   deleteImageHandlerForProduct
 );
 
+
+
 productRoute.get("/products/search", productCtrl.searchProduct);
 
-productRoute.get("/products", productCtrl.getThatMuchProduct);
+//! Both admin and staff and customer and normal user can access the resource
+productRoute.get("/products",  withPagination(Product));
 
-productRoute.get("/products/lowtohigh", productCtrl.lowtoHighPriceProduct);
+
 
 productRoute.get("/products/:slug", productCtrl.getCertainproduct);
 
-// productRoute.get("/frontend/latestproducts", )
 
 productRoute.put(
   "/cms/products/:slug",
@@ -51,11 +55,6 @@ productRoute.put(
   productCtrl.updateCertainproduct
 );
 
-// productRoute.get("/:categoryName", isAuthenticated, isAdmin,  productCtrl.getAllProductsByCategoryName);
-
-// productRoute.get("/latestproduct", isAuthenticated, isAdmin, productCtrl.Latestproducts);
-
-// productRoute.get("/search",  isAuthenticated, isAdmin,  productCtrl.searchproduct);
 
 productRoute.get(
   "/cms/products/:slug",
@@ -64,12 +63,7 @@ productRoute.get(
   productCtrl.getCertainproduct
 );
 
-productRoute.get(
-  "/cms/products",
-  isAuthenticated,
-  isAdminOrStaff,
-  productCtrl.getAllproduct
-);
+
 
 productRoute.get(
   "/products/nodejsProductImages/:filename",

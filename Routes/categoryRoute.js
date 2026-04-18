@@ -10,8 +10,13 @@ const productCtrl = require("../controller/Product.js");
 
 const productRoute = require("./productRoute.js");
 
+
+
 const isAdmin = require("../middleware/isAdmin.js");
 const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
+const Category = require("../model/Category.js");
+const withPagination = require("../middleware/withPagination.js");
+
 
 //! AdminorStaff
 categoryRoute.post(
@@ -42,17 +47,19 @@ categoryRoute.get(
   categoryCtrl.getCategoryBySlug
 );
 
+
+
+//! Admin can access the route and staff can access the route but customer cannot accesste route
 categoryRoute.get(
   "/cms/categories",
   isAuthenticated,
   isAdminOrStaff,
-  categoryCtrl.getAllCategory
+  withPagination(Category)
 );
 
 // categoryRoute.get("/:id", isAuthenticated,   categoryCtrl.getCertainCategory);
 
 //! Customer part and //!Normal User
-
 categoryRoute.get("/categories", categoryCtrl.getAllCategory);
 
 categoryRoute.get("/categories/:slug", categoryCtrl.getCategoryBySlug);
@@ -62,20 +69,6 @@ productRoute.get(
   productCtrl.getAllProductByCategoryId
 );
 
-// categoryRoute.get("/frontend/categories/:id/posts",   categoryCtrl.getCertainCategoryProducts)
 
-//! Normal Part
-
-// categoryRoute.get("/frontend/categories", categoryCtrl.getAllCategory);
-
-// categoryRoute.get("/frontend/categories/:id",  categoryCtrl.getCertainCategory)
-
-// categoryRoute.get("/frontend/categories/:id/products", categoryCtrl.getCertainCategoryProducts)
-
-// Route to get category ID by name
-// categoryRoute.get("/getCategoryId/:categoryName", categoryCtrl.getCategoryId);
-
-// Example route with missing callback function
-// categoryRoute.get("/get", isAuthenticated, isAdmin, categoryCtrl.getCategories);
 
 module.exports = categoryRoute;

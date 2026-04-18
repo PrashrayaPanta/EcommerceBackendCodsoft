@@ -2,6 +2,8 @@ const express = require("express");
 
 const isAuthenticated = require("../middleware/isAuth.js");
 
+
+
 const brandRoute = express.Router();
 
 const brandCtrl = require("../controller/Brand.js");
@@ -16,12 +18,13 @@ const productRoute = require("./productRoute.js");
 const productCtrl = require("../controller/Product.js");
 const { upload } = require("../upload/upload.js");
 const isAdminOrStaff = require("../middleware/isAdminOrStaff.js");
+const withPagination = require("../middleware/withPagination.js");
+const Brand = require("../model/Brand.js");
 
 // Upload folder name
 const Brand_IMAGES_FOLDER = "nodejsbrandImages";
 
 //! Admin and Staff Routes for Brand Management
-
 brandRoute.post(
   "/cms/brands",
   isAuthenticated,
@@ -63,8 +66,10 @@ brandRoute.get(
   "/cms/brands",
   isAuthenticated,
   isAdminOrStaff,
-  brandCtrl.getAllBrand
+  withPagination(Brand)
 );
+
+
 
 brandRoute.get("/brands/:slug", brandCtrl.GetCertainBrand);
 
