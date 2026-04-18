@@ -34,8 +34,6 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-console.log("Hello i am just above mongodb connedction function");
-
 //!Connect to mongodb
 
 mongoose
@@ -45,13 +43,11 @@ mongoose
   .catch((error) => console.log(error));
 
 //!Middlewares
-
 app.use(express.json());
 
 //passing incoming json data from the client
 
 //!Routes
-
 app.use("/api", categoryRoute);
 
 app.use("/api", subCategoryRoute);
@@ -62,6 +58,7 @@ app.use("/api", userRoute);
 
 app.use("/api", productRoute);
 
+
 app.use("/api", orderRoute);
 
 app.use("/api", brandRoute);
@@ -70,8 +67,11 @@ app.use("/api", reviewRoute);
 
 app.use("/api/address", addressRoute);
 
-//!Error handler
+app.use("/*", () => {
+    throw new Error("Not Found")
+})
 
+//!Error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
